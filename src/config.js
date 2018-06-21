@@ -1,9 +1,9 @@
 // 配置项
-const host = 'http://localhost:5757/weapp'
+const host = 'http://localhost:5757'
 const config = {
-    host,
-    loginUrl: `${host}/login`,
-    userUrl: `${host}/user`
+  host,
+  loginUrl: `${host}/weapp/login`,
+  userUrl: `${host}/weapp/user`
 }
 
 export default config

@@ -1,45 +1,45 @@
-import config from "./config"
+import config from './config'
 
-export function get(url, data) {
-    return request(url, "GET", data)
+export function get (url, data) {
+  return request(url, 'GET', data)
 }
 
-export function post(url, data) {
-    return request(url, "POST", data)
+export function post (url, data) {
+  return request(url, 'POST', data)
 }
 
-function request(url, method, data, header = {}) {
-    return new Promise((resolve, reject) => {
-        wx.request({
-            data,
-            method,
-            header,
-            dataType: 'json',
-            url: config.host + url,
-            success(res) {
-                if (res.data.code === 0) {
-                    resolve(res.data.data)
-                } else {
-                    showModal("失败", res.data.data.msg)
-                    reject(res.data)
-                }
-            }
+function request (url, method, data, header = {}) {
+  return new Promise((resolve, reject) => {
+    wx.request({
+      data,
+      method,
+      header,
+      dataType: 'json',
+      url: config.host + url,
+      success (res) {
+        if (res.data.code === 0) {
+          resolve(res.data.data)
+        } else {
+          showModal('失败', res.data.data.msg)
+          reject(res.data)
+        }
+      }
 
-        })
     })
+  })
 }
 
-export function showModal(title, content) {
-    wx.showModal({
-        title,
-        content,
-        showCancel: false
-    })
+export function showModal (title, content) {
+  wx.showModal({
+    title,
+    content,
+    showCancel: false
+  })
 }
 
-export function showSuccess(text) {
-    wx.showToast({
-        title: text,
-        icon: 'success'
-    })
+export function showSuccess (text) {
+  wx.showToast({
+    title: text,
+    icon: 'success'
+  })
 }
