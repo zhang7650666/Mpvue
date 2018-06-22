@@ -1,11 +1,10 @@
 <!-- Me component -->
 <template>
   <div class="me-wrap">
-    <button open-type="getUserInfo" lang="zh_CN" @getuserinfo="doLogin">获取用户信息</button>
-    <p>个人中心</p>
     <div class="userInfo">
       <img :src="userInfo.avatarUrl" alt="">
-      <p>{{userInfo.nickName}}</p>
+      <p v-if="!userInfo.flag">{{userInfo.nickName}}</p>
+      <button v-if="userInfo.flag" open-type="getUserInfo" bindgetuserinfo="onGetUserInfo">授权登录</button>
     </div>
     <YearProgress></YearProgress>
     <button @click="scanBook" class="btn">添加图书</button>
@@ -13,61 +12,61 @@
 </template>
 
 <script>
-import {get,showSuccess} from '../../util.js'
+import {get,showSuccess} from '@/util.js'
+import YearProgress from "@/components/YearProgress"
 import qcloud from 'wafer2-client-sdk' // 获取用户id   微信自带的  只需要安装一下就好
-import config from '../../config'
+import config from '@/config.js'
 export default {
   data () {
     return {
       userInfo:{
-
+        avatarUrl: '../../../static/img/unlogin.png',
+        nickName: '点击登录',
+        flag:true,// 未登录标识
       }
     }
   },
+  mounted(){
+    if(wx.getStorageSync('userInfo')){
+      this.userInfo = wx.getStorageSync('userInfo')
+      //  get('/weapp/user').then((res) => {
+      //     console.log(1)
+      //     console.log(res)
+      //   })
+       qcloud.request({
+        url: config.userUrl,
+        login: true,
+        success (userRes) {
+         console.log(userRes.data.data)
+        }
+      })
+    }
+  },
+  // 获取用户信息
+  onGetUserInfo: function(e) {
+      this.userInfo = e.detail.userInfo
+      wx.setStorageSync('userInfo',e.detail.userInfo)
+      showSuccess('登录成功')
 
-  async created () {
-    // await get('/weapp/demo').then(res => {
-    //   console.log(res)
-    // }) 
-    console.log('小程序启动成功')
-    this.userInfo = wx.getStorageSync('userInfo')
+
+      console.log(e.detail.userInfo)
   },
   methods: {
     // 图书扫码
     scanBook(){
-
-    },
-    // 判断有没有登录
-    doLogin() {
-      let userInfo = wx.getStorageSync('userInfo')
-      if(!userInfo){
-        qcloud.setLoginUrl(config.loginUrl)
-        qcloud.login({
-          success: function (userInfo) {
-            console.log('登录成功', userInfo)
-            wx.setStorageSync('userInfo',userInfo)
-            showSuccess('登录成功')
-          },
-          fail: function (err) {
-            console.log('登录失败', err)
-            showSuccess('登录失败')
-          }
-        })
-      }else{
-        qcloud.setLoginUrl(config.loginUrl)
-        qcloud.login({
-          success: function (userInfo) {
-            console.log('登录成功', userInfo)
-          },
-          fail: function (err) {
-            console.log('登录失败', err)
-          }
-        })
-      }
-      
+      wx.scanCode({
+        success(res){
+          console.log(res)
+        },
+        fail(err){
+          console.log(res)
+        }
+      })
     }
+  },
+  components:{
+    YearProgress
   }
-
 }
 </script>
 <style lang="scss">
