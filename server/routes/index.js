@@ -33,4 +33,12 @@ router.get('/message', controllers.message.get)
 router.post('/message', controllers.message.post)
 // 测试  demo接口
 router.get('/demo', controllers.demo)
+// 添加图书
+router.post('/addbook', controllers.addbook)
+// 获取图书列表
+router.get('/booklist', controllers.booklist)
+// 图书详情
+router.get('/bookdetail', controllers.bookdetail)
+// gettop
+router.get('/gettop', controllers.gettop)
 module.exports = router

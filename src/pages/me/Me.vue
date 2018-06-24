@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import {get,showSuccess} from '@/util.js'
+import {get,showSuccess,post, showModal} from '@/util.js'
 import YearProgress from "@/components/YearProgress"
 import qcloud from 'wafer2-client-sdk' // 获取用户id   微信自带的  只需要安装一下就好
 import config from '@/config.js'
@@ -29,34 +29,44 @@ export default {
   mounted(){
     if(wx.getStorageSync('userInfo')){
       this.userInfo = wx.getStorageSync('userInfo')
-      //  get('/weapp/user').then((res) => {
-      //     console.log(1)
-      //     console.log(res)
-      //   })
-       qcloud.request({
-        url: config.userUrl,
-        login: true,
-        success (userRes) {
-         console.log(userRes.data.data)
-        }
-      })
     }
   },
   // 获取用户信息
   onGetUserInfo: function(e) {
-      this.userInfo = e.detail.userInfo
-      wx.setStorageSync('userInfo',e.detail.userInfo)
+      let This = this;
       showSuccess('登录成功')
-
-
-      console.log(e.detail.userInfo)
+      qcloud.setLoginUrl(config.loginUrl)
+      qcloud.login({
+        success: function (userinfo) {
+          This.userInfo = userinfo
+          wx.setStorageSync('userInfo',userinfo)
+          console.log(This.userInfo)
+        }
+      })
+     
   },
   methods: {
+    // addbook  添加图书
+    async addBook(isbn){
+      let res = await post('/weapp/addbook',{
+        isbn,
+        openId:this.userInfo.openId
+      })
+      console.log(res)
+      if(res.code === 0){
+         showModal('添加成功',`${res.title}添加成功`)
+      }
+     
+    },
     // 图书扫码
     scanBook(){
+      let This = this
       wx.scanCode({
         success(res){
-          console.log(res)
+          if(res.result){
+            console.log(res)
+            This.addBook(res.result)
+          }
         },
         fail(err){
           console.log(res)

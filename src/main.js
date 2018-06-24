@@ -8,9 +8,10 @@ app.$mount()
 export default {
   config: {
     'pages': [
-      '^pages/me/main',
+      'pages/me/main',
       'pages/comments/main',
-      'pages/books/main'
+      'pages/detail/main',
+      '^pages/books/main'
     ],
     'window': {
       'backgroundTextStyle': 'light',
